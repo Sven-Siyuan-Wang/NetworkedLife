@@ -68,11 +68,11 @@ for a in range(len(bi)):
 print('D')
 pp.pprint(D)
 R_npred = R.tolist()
-print(R_npred)
+# print(R_npred)
 
 for i in range(R.shape[0]):
     for j in range(R.shape[1]):
-        if R_npred[i][j]==0:
+        # if R_npred[i][j]==0:
             # find top 2 neighbors
             l = [abs(D[j][other]) for other in range(R.shape[1])]
             print(l)
@@ -80,8 +80,13 @@ for i in range(R.shape[0]):
             l[top1] = 0
             top2 = l.index(max(l))
             print(top1, top2)
+            if R_error[i][top1]==99:
+                R_error[i][top1] = 0
+            if R_error[i][top2]==99:
+                R_error[i][top2] = 0
             R_npred[i][j] = R_pred[i][j] \
-                            + D[j][top1]*R_error[i][top1] / (abs(D[j][top1]+abs(D[j][top2]))) \
-                            + D[j][top2]*R_error[i][top2] / (abs(D[j][top1]+abs(D[j][top2])))
+                            + D[j][top1]*R_error[i][top1] / (abs(D[j][top1])+abs(D[j][top2])) \
+                            + D[j][top2]*R_error[i][top2] / (abs(D[j][top1])+abs(D[j][top2]))
+            R_npred[i][j] = int(round(R_npred[i][j], 2)*100)/ 100
 pp.pprint(R_npred)
 
