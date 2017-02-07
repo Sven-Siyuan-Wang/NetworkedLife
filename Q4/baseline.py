@@ -43,9 +43,12 @@ R_pred = [[0 for i in range(R.shape[1])] for j in range(R.shape[0])]
 for i in range(R.shape[0]):
     for j in range(R.shape[1]):
         temp = mean + bu[i] + bi[j]
+        # clippign
+        if temp>5:
+            temp = 5
+        if temp<1:
+            temp = 1
         R_pred[i][j] = int(round(temp, 2)*100) /100
         # print(R_pred[i][j])
 
 pp.pprint(R_pred)
-
-print(np.linalg.norm(A.dot(b.transpose())-c)**2)
