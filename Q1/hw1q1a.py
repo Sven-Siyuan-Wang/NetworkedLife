@@ -12,7 +12,7 @@ def calculateSIR(G, p, n, r, t, i):
 
 G = [[1, 0.1, 0.3],[0.2, 1, 0.3],[0.2, 0.2, 1]]
 r = [1, 1.5, 1]
-p = [[1]] * 3
+p = [[1.8974667], [2.9705934], [1.9803956]]
 n = [0.1] * 3
 SIR = [[]] * 3
 
@@ -33,6 +33,7 @@ for i in range(3):
 		
 print (p)
 print (SIR)
+print (p[0][10],p[1][10],p[2][10])
 fig, ax = plt.subplots()
 # ax.plot(p[0], label='Link 1')
 # ax.plot(p[1], label='Link 2')
