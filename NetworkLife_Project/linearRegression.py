@@ -12,28 +12,39 @@ rBar = np.mean(trStats["ratings"])
 def getA(training):
     A = np.zeros((trStats["n_ratings"], trStats["n_movies"] + trStats["n_users"]))
     # ???
+    for i in range(trStats["n_ratings"]):
+        A[i][trStats["movies"][i]] = 1
+        A[i][trStats["n_movies"] + trStats["users"][i]] = 1
     return A
 
 # we also get c
 def getc(rBar, ratings):
     # ???
-    return None
+    c = np.array([ratings[i]-rBar for i in range(len(ratings))])
+    return c
 
 # apply the functions
 A = getA(training)
+print(A)
 c = getc(rBar, trStats["ratings"])
 
 # compute the estimator b
 def param(A, c):
     # ???
-    return None
+    inverse = np.linalg.pinv(A.transpose().dot(A))
+    b = inverse.dot(A.transpose()).dot(c)
+    b = np.array(b).flatten()
+    return b
 
 # compute the estimator b with a regularisation parameter l
 # note: lambda is a Python keyword to define inline functions
 #       so avoid using it as a variable name!
 def param_reg(A, c, l):
     # ???
-    return None
+    print(A.shape)
+    inverse = np.linalg.pinv(A.transpose().dot(A) + l * np.identity(A.shape[1]))  # inv(ATA + lamda*I)
+    b = inverse.dot(A.transpose()).dot(c)
+    return b
 
 # from b predict the ratings for the (movies, users) pair
 def predict(movies, users, rBar, b):
@@ -47,11 +58,12 @@ def predict(movies, users, rBar, b):
     return p
 
 # Unregularised version
-# b = param(A, c)
+b = param(A, c)
 
 # Regularised version
-l = 1
+l = 0
 b = param_reg(A, c, l)
 
+# print(b)
 print "Linear regression, l = %f" % l
 print lib.rmse(predict(trStats["movies"], trStats["users"], rBar, b), trStats["ratings"])
