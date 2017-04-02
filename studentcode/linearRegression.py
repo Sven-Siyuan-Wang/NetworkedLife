@@ -58,12 +58,21 @@ def predict(movies, users, rBar, b):
         p[i] = rating
     return p
 
+def predictForUser(user, rBar, b):
+    movies = trStats["u_movies"]
+    users = np.array([user] * trStats["n_movies"])
+    return predict(movies, users, rBar, b)
+
+
 # Unregularised version
 b = param(A, c)
 
 # Regularised version
-l = 1
+l = 7
 b = param_reg(A, c, l)
 print(b.shape)
-# print "Linear regression, l = %f" % l
+print "Linear regression, l = %f" % l
 print lib.rmse(predict(valStats["movies"], valStats["users"], rBar, b), valStats["ratings"])
+
+predictedRatings = np.array([predictForUser(user, rBar, b) for user in trStats["u_users"]])
+np.savetxt("predictedRatings.txt", predictedRatings)
