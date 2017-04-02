@@ -14,8 +14,8 @@ K = 5
 
 # SET PARAMETERS HERE!!!
 # number of hidden units
-F = 90
-epochs = 5
+F = 7
+epochs = 50
 gradientLearningRate = 0.0001
 
 # Initialise all our arrays
@@ -41,7 +41,6 @@ for epoch in range(1, epochs):
         ### LEARNING ###
         # propagate visible input to hidden units
         posHiddenProb = rbm.visibleToHiddenVec(v, weightsForUser)
-        print(posHiddenProb.shape)
         # get positive gradient
         # note that we only update the movies that this user has seen!
         posprods[ratingsForUser[:, 0], :, :] += rbm.probProduct(v, posHiddenProb)

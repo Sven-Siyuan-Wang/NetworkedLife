@@ -3,10 +3,13 @@ import projectLib as lib
 
 # shape is movie,user,rating
 training = lib.getTrainingData()
+validation = lib.getValidationData()
 
 #some useful stats
 trStats = lib.getUsefulStats(training)
 rBar = np.mean(trStats["ratings"])
+
+valStats = lib.getUsefulStats(validation)
 
 # we get the A matrix from the training dataset
 def getA(training):
@@ -61,6 +64,6 @@ b = param(A, c)
 # Regularised version
 l = 1
 b = param_reg(A, c, l)
-
+print(b.shape)
 # print "Linear regression, l = %f" % l
-print lib.rmse(predict(trStats["movies"], trStats["users"], rBar, b), trStats["ratings"])
+print lib.rmse(predict(valStats["movies"], valStats["users"], rBar, b), valStats["ratings"])
