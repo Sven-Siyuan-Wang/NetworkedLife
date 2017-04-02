@@ -37,7 +37,10 @@ for epoch in range(epochs):
 
     ### LEARNING ###
     # propagate visible input to hidden units
-    posHiddenProb = rbm.visibleToHiddenVec(v, weightsForUser, hidBias)
+    # posHiddenProb = rbm.visibleToHiddenVec(v, weightsForUser, hidBias)
+
+    posHiddenProb = rbm.visibleToHiddenVec(v, weightsForUser)
+
     # get positive gradient
     posGrad = rbm.probProduct(v, posHiddenProb)
 

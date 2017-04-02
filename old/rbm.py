@@ -15,7 +15,13 @@ def getV(ratingsForUser):
     # you should return a binary matrix ret of size m x K, where m is the number of movies
     #   that the user has seen. ret[i][k] = 1 if the user has rated movie i with k stars
     #   otherwise it is 0
-    return None
+
+    ret = []
+    for rating in ratingsForUser:
+        rating_vec = [0] * 5
+        rating_vec[rating[1]-1] = 1
+        ret.append(rating_vec)
+    return np.array(ret)
 
 def getInitialWeights(m, F, K):
     # m is the number of visible units
@@ -27,19 +33,27 @@ def sig(x):
     ### TO IMPLEMENT ###
     # x is a real vector of size n
     # ret should be a vector of size n where ret_i = sigmoid(x_i)
-    return None
+
+    return 1 / (1+np.exp(-x))
 
 def visibleToHiddenVec(v, w):
     ### TO IMPLEMENT ###
     # v is a matrix of size m x 5. Each row is a binary vector representing a rating
     #    OR a probability distribution over the rating
-    # w is a list of matrices of size m x F x 5
+    # w is a list of matrices of size m x F x 5. F is the number of hidden units
     # ret should be a vector of size F
-    return None
+    m = v.shape[0]
+    F = w.shape[1]
+    ret = np.zeros(F)
+    for i in range(m):
+        for k in range(K):
+            ret += v[i, k] * w[i,:,k]
+
+    return sig(ret)
 
 def hiddenToVisible(h, w):
     ### TO IMPLEMENT ###
-    # h is a binary vector of size F
+    # h is a binary vector of size F:
     # w is an array of size m x F x 5
     # ret should be a matrix of size m x 5
     return None
@@ -110,3 +124,6 @@ def predict(movies, users, W, training, predictType="exp"):
     # given a list of movies and users, predict the rating for each (movie, user) pair
     # used to compute RMSE
     return [predictMovieForUser(movie, user, W, training, predictType=predictType) for (movie, user) in zip(movies, users)]
+
+
+# Testing

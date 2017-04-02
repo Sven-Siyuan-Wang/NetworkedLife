@@ -20,12 +20,10 @@ def getA(training):
 # we also get c
 def getc(rBar, ratings):
     # ???
-    c = np.array([ratings[i]-rBar for i in range(len(ratings))])
-    return c
+    return np.array([ratings[i]-rBar for i in range(len(ratings))])
 
 # apply the functions
 A = getA(training)
-print(A)
 c = getc(rBar, trStats["ratings"])
 
 # compute the estimator b
@@ -61,9 +59,8 @@ def predict(movies, users, rBar, b):
 b = param(A, c)
 
 # Regularised version
-l = 0
+l = 1
 b = param_reg(A, c, l)
 
-# print(b)
-print "Linear regression, l = %f" % l
+# print "Linear regression, l = %f" % l
 print lib.rmse(predict(trStats["movies"], trStats["users"], rBar, b), trStats["ratings"])
