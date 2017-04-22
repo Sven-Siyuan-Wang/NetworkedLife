@@ -40,7 +40,7 @@ def getBatches(array, B):
 
 csvfile = open("tuningParams.csv",'w')
 
-writer = csv.writer(csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+writer = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
 writer.writerow(['Momentum', 'Regularization', 'Alpha', 'B', 'F', 'epoch', 'RMSE'])
 
 best_momentum = 0
