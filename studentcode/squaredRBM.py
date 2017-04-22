@@ -68,7 +68,7 @@ for momentum in mrange:
                         # in each epoch, we'll visit all users in a random order
                         visitingOrder = np.array(trStats["u_users"])
                         np.random.shuffle(visitingOrder)
-                        adaptiveLearningRate = alpha / epoch
+                        adaptiveLearningRate = alpha / epoch**2
                         batches = getBatches(visitingOrder, B)
                         for batch in batches:
                             prev_grad = grad

@@ -17,12 +17,12 @@ F = 8
 epochs = 30
 alpha = 0.03
 momentum = 0
-B = 10
-
+B = 15
+regularization = 0.0001
 
 # Parameter tuning
 rmse_m = []
-mrange = [0, 0.2, 0.4, 0.6, 0.8, 0.9, 1]
+mrange = [0.6, 0.75, 0.9]
 # mrange = [0]
 
 def getBatches(array, B):
@@ -80,8 +80,8 @@ for momentum in mrange:
                 negprods[ratingsForUser[:, 0], :, :] += rbm.probProduct(negData, negHiddenProb)
 
                 # we average over the number of users
-                grad += adaptiveLearningRate * (posprods - negprods) / trStats["n_users"]
-                # grad = gradientLearningRate * (posprods - negprods) / trStats["n_users"]
+                grad += adaptiveLearningRate * ((posprods - negprods) / trStats["n_users"] - regularization * W)
+                # grad += adaptiveLearningRate * (posprods - negprods) / trStats["n_users"]
 
             # mini-batch update of weights
             W += grad + momentum * prev_grad
