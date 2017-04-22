@@ -22,7 +22,7 @@ B = 10
 regularization = 0.0001
 
 # Parameter tuning
-mrange = [0.06, 0.075, 0.9]
+mrange = [0.6, 0.75, 0.9]
 rrange = [0.00001, 0.0001,0.0003, 0.001, 0.01]
 arange = [0.01, 0.03, 0.1]
 brange = [5, 10, 20]
