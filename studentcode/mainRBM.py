@@ -1,6 +1,7 @@
 import numpy as np
 import rbm
 import projectLib as lib
+import matplotlib.pyplot as plt
 
 training = lib.getTrainingData()
 validation = lib.getValidationData()
@@ -18,10 +19,16 @@ F = 7
 epochs = 50
 gradientLearningRate = 0.0001
 
+regularization = 0.001
 # Initialise all our arrays
 W = rbm.getInitialWeights(trStats["n_movies"], F, K)
 posprods = np.zeros(W.shape)
 negprods = np.zeros(W.shape)
+
+best_epoch = {"weights":W,"rmse_t":100,"rmse_v":100}
+
+tr_rmse = []
+vl_rmse = []
 
 for epoch in range(1, epochs):
     # in each epoch, we'll visit all users in a random order
@@ -41,6 +48,7 @@ for epoch in range(1, epochs):
         ### LEARNING ###
         # propagate visible input to hidden units
         posHiddenProb = rbm.visibleToHiddenVec(v, weightsForUser)
+
         # get positive gradient
         # note that we only update the movies that this user has seen!
         posprods[ratingsForUser[:, 0], :, :] += rbm.probProduct(v, posHiddenProb)
@@ -57,7 +65,7 @@ for epoch in range(1, epochs):
         negprods[ratingsForUser[:, 0], :, :] += rbm.probProduct(negData, negHiddenProb)
 
         # we average over the number of users
-        grad = gradientLearningRate * (posprods - negprods) / trStats["n_users"]
+        grad = gradientLearningRate * ((posprods - negprods) / trStats["n_users"] - regularization*W)
 
         W += grad
 
@@ -71,12 +79,36 @@ for epoch in range(1, epochs):
     vl_r_hat = rbm.predict(vlStats["movies"], vlStats["users"], W, training)
     vlRMSE = lib.rmse(vlStats["ratings"], vl_r_hat)
 
-    print "### EPOCH %d ###" % epoch
-    print "Training loss = %f" % trRMSE
-    print "Validation loss = %f" % vlRMSE
+    tr_rmse.append(trRMSE)
+    vl_rmse.append(vlRMSE)
 
+    if(vlRMSE < best_epoch["rmse_v"]):
+        best_epoch["rmse_v"] =vlRMSE
+        best_epoch["rmse_t"] = trRMSE
+        best_epoch["weights"] = W
+
+    print ("### EPOCH %d ###" % epoch)
+    print ("Training loss = %f" % trRMSE)
+    print ("Validation loss = %f" % vlRMSE)
+
+
+
+# print ("Best Training loss = %f" % best_epoch["rmse_t"])
+print ("Best Validation loss = %f" % best_epoch["rmse_v"])
 ### END ###
 # This part you can write on your own
 # you could plot the evolution of the training and validation RMSEs for example
-predictedRatings = np.array([rbm.predictForUser(user, W, training) for user in trStats["u_users"]])
+predictedRatings = np.array([rbm.predictForUser(user, best_epoch["weights"], training) for user in trStats["u_users"]])
 np.savetxt("predictedRatings.txt", predictedRatings)
+
+
+fig, ax = plt.subplots()
+ax.plot(tr_rmse,label = "training RMSE")
+ax.plot(vl_rmse,label = "validation RMSE")
+legend = ax.legend(loc='upper right', shadow=True)
+frame = legend.get_frame()
+frame.set_facecolor('0.90')
+ax.set_xlabel("epoch")
+ax.set_ylabel("RMSE")
+
+plt.show()
