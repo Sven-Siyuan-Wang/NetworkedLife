@@ -28,6 +28,9 @@ arange = [0.01, 0.03, 0.1]
 brange = [5, 10, 20]
 frange = [6, 8, 10]
 
+
+total = len(mrange) * len(rrange) * len(arange) * len(brange) * len(frange)
+
 def getBatches(array, B):
     ret = []
     for i in range(int(len(array)/B)):
@@ -38,7 +41,7 @@ def getBatches(array, B):
 
 # output file
 
-csvfile = open("tuningParams.csv",'w')
+csvfile = open("squared.csv",'w')
 
 writer = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
 writer.writerow(['Momentum', 'Regularization', 'Alpha', 'B', 'F', 'epoch', 'RMSE'])
@@ -49,6 +52,7 @@ best_epoch = 0
 best_alpha = 0
 best_B = 0
 best_F = 0
+counter = 0
 
 for momentum in mrange:
     for regularization in rrange:
@@ -57,6 +61,8 @@ for momentum in mrange:
                 for F in frange:
                     # reset best params
                     min_rmse = 2
+                    print("Finished: %.3f" % (counter / total))
+                    counter += 1
 
                     # Initialise all our arrays
                     W = rbm.getInitialWeights(trStats["n_movies"], F, K)

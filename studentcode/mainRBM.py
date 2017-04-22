@@ -3,6 +3,8 @@ import rbm
 import projectLib as lib
 import matplotlib.pyplot as plt
 import csv
+import time
+
 training = lib.getTrainingData()
 validation = lib.getValidationData()
 # You could also try with the chapter 4 data
@@ -28,6 +30,7 @@ arange = [0.01, 0.03, 0.1]
 brange = [5, 10, 20]
 frange = [6, 8, 10]
 
+total = len(mrange) * len(rrange) * len(arange) * len(brange) * len(frange)
 def getBatches(array, B):
     ret = []
     for i in range(int(len(array)/B)):
@@ -49,12 +52,15 @@ best_epoch = 0
 best_alpha = 0
 best_B = 0
 best_F = 0
+counter = 0
 
 for momentum in mrange:
     for regularization in rrange:
         for alpha in arange:
             for B in brange:
                 for F in frange:
+                    print("Finished: %.3f" % (counter/total))
+                    counter += 1
                     # reset best params
                     min_rmse = 2
 
