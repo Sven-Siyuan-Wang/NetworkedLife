@@ -1,5 +1,9 @@
 import numpy as np
+from matplotlib import pyplot
+
 import projectLib as lib
+from matplotlib import pyplot as plt
+import numpy
 
 # shape is movie,user,rating
 training = lib.getTrainingData()
@@ -64,15 +68,37 @@ def predictForUser(user, rBar, b):
     return predict(movies, users, rBar, b)
 
 
+# construct user-movie rating matrix
+
+
 # Unregularised version
 b = param(A, c)
 
 # Regularised version
-l = 7
-b = param_reg(A, c, l)
-print(b.shape)
-print "Linear regression, l = %f" % l
-print lib.rmse(predict(valStats["movies"], valStats["users"], rBar, b), valStats["ratings"])
 
-predictedRatings = np.array([predictForUser(user, rBar, b) for user in trStats["u_users"]])
-np.savetxt("predictedRatings.txt", predictedRatings)
+l_l = numpy.linspace(6, 7, num=20)
+l_rmse = []
+min_l = 99
+min_rmse = 99
+for l in l_l:
+    b = param_reg(A, c, l)
+    print "Linear regression, l = %f" % l
+    rmse = lib.rmse(predict(valStats["movies"], valStats["users"], rBar, b), valStats["ratings"])
+    print rmse
+    l_rmse.append(rmse)
+    if min_rmse > rmse:
+        min_l = l
+        min_rmse = rmse
+
+
+plt.plot(l_l, l_rmse, 'ro')
+plt.axis([6, 7, 1.069, 1.070])
+plt.title("RMSE vs l (Min: %f,%f)" % (min_l, min_rmse))
+plt.show()
+
+
+# print(trStats["n_users"])
+#
+# print(trStats["n_movies"])
+# predictedRatings = np.array([predictForUser(user, rBar, b) for user in trStats["u_users"]])
+# np.savetxt("predictedRatings.txt", predictedRatings)
