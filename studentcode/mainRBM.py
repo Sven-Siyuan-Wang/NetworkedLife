@@ -45,6 +45,12 @@ for epoch in range(1, epochs):
         # get the weights associated to movies the user has seen
         weightsForUser = W[ratingsForUser[:, 0], :, :]
 
+        weightsForUser_reg = np.zeros(W.shape)
+        for movie in range(W.shape[0]):
+            if movie not in ratingsForUser[:, 0]:
+                weightsForUser_reg[movie] = np.zeros((W.shape[1],W.shape[2]))
+            else:
+                weightsForUser_reg[movie] = W[movie]
         ### LEARNING ###
         # propagate visible input to hidden units
         posHiddenProb = rbm.visibleToHiddenVec(v, weightsForUser)
@@ -65,7 +71,7 @@ for epoch in range(1, epochs):
         negprods[ratingsForUser[:, 0], :, :] += rbm.probProduct(negData, negHiddenProb)
 
         # we average over the number of users
-        grad = gradientLearningRate * ((posprods - negprods) / trStats["n_users"] - regularization*W)
+        grad = gradientLearningRate * ((posprods - negprods) / trStats["n_users"] - regularization*weightsForUser_reg)
 
         W += grad
 
