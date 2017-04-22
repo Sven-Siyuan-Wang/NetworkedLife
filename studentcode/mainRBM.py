@@ -17,14 +17,14 @@ K = 5
 F = 8
 epochs = 30
 gradientLearningRate = 0.0001
-momentum = 0.5
+momentum = 0
 
 
 
 # Parameter tuning
 rmse_m = []
-mrange = [0, 0.1, 0.8, 0.9]
-for momentum in mrange:
+mrange = [0.0001, 0.0003, 0.001, 0.003, 0.01]
+for gradientLearningRate in mrange:
     min_rmse = 2
 
     # Initialise all our arrays
@@ -82,7 +82,7 @@ for momentum in mrange:
         vl_r_hat = rbm.predict(vlStats["movies"], vlStats["users"], W, training)
         vlRMSE = lib.rmse(vlStats["ratings"], vl_r_hat)
 
-        print "### Momentum %f EPOCH %d ###" % (momentum,epoch)
+        print "### Alpha %4f EPOCH %d ###" % (gradientLearningRate,epoch)
         print "Training loss = %f" % trRMSE
         print "Validation loss = %f" % vlRMSE
 
@@ -97,7 +97,7 @@ print(min_rmse, best_epoch, best_F)
 
 plt.plot(mrange, rmse_m, 'ro')
 plt.axis([min(mrange), max(mrange), 1.1, 1.2])
-plt.title("Best RMSE vs Momentum")
+plt.title("Best RMSE vs Learning Rate")
 plt.show()
 
 

@@ -15,13 +15,14 @@ K = 5
 # number of hidden units
 F = 8
 epochs = 50
-gradientLearningRate = 0.0001
+gradientLearningRate = 0.001
 momentum = 0
+B = 10
 
 
 # Parameter tuning
 rmse_m = []
-mrange = [1, 2, 5, 10, 20]
+mrange = [0, 0.2, 0.4, 0.6, 0.8, 0.9, 1]
 
 
 def getBatches(array, B):
@@ -32,7 +33,7 @@ def getBatches(array, B):
         ret.append(array[len(array)/B:])
     return ret
 
-for B in mrange:
+for momentum in mrange:
     min_rmse = 2
 
     # Initialise all our arrays
@@ -49,6 +50,7 @@ for B in mrange:
         # adaptiveLearningRate = gradientLearningRate / epoch
         batches = getBatches(visitingOrder, B)
         for batch in batches:
+            grad = 0
             for user in batch:
                 # get the ratings of that user
                 ratingsForUser = lib.getRatingsForUser(user, training)
@@ -78,7 +80,7 @@ for B in mrange:
                 negprods[ratingsForUser[:, 0], :, :] += rbm.probProduct(negData, negHiddenProb)
 
                 # we average over the number of users
-                grad = momentum*grad + gradientLearningRate * (posprods - negprods) / trStats["n_users"]
+                grad += gradientLearningRate * (posprods - negprods) / trStats["n_users"]
                 # grad = gradientLearningRate * (posprods - negprods) / trStats["n_users"]
 
             # mini-batch update of weights
@@ -94,7 +96,7 @@ for B in mrange:
         vl_r_hat = rbm.predict(vlStats["movies"], vlStats["users"], W, training)
         vlRMSE = lib.rmse(vlStats["ratings"], vl_r_hat)
 
-        print "### B %d EPOCH %d ###" % (B,epoch)
+        print "### Momentum %d EPOCH %d ###" % (momentum, epoch)
         print "Training loss = %f" % trRMSE
         print "Validation loss = %f" % vlRMSE
 
@@ -107,8 +109,8 @@ print(rmse_m)
 print(min_rmse, best_epoch)
 
 plt.plot(mrange, rmse_m, 'ro')
-plt.axis([min(mrange), max(mrange), 1.1, 1.25])
-plt.title("Best RMSE vs Batch Size")
+plt.axis([min(mrange), max(mrange), 1.1, 1.2])
+plt.title("Best RMSE vs Momentum")
 plt.show()
 
 
