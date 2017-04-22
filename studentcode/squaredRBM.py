@@ -61,7 +61,7 @@ for momentum in mrange:
                 for F in frange:
                     # reset best params
                     min_rmse = 2
-                    print("Finished: %.3f" % (counter / total))
+                    print("Finished: %.3f" % (1.0 * counter / total))
                     counter += 1
 
                     # Initialise all our arrays

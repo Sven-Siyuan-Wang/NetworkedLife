@@ -59,7 +59,7 @@ for momentum in mrange:
         for alpha in arange:
             for B in brange:
                 for F in frange:
-                    print("Finished: %.3f" % (counter/total))
+                    print("Finished: %.3f" % (1.0 * counter/total))
                     counter += 1
                     # reset best params
                     min_rmse = 2
