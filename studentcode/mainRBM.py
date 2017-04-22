@@ -16,15 +16,17 @@ K = 5
 # number of hidden units
 F = 8
 epochs = 30
-gradientLearningRate = 0.0001
+alpha = 0.001
 momentum = 0
 
 
 
 # Parameter tuning
 rmse_m = []
-mrange = [0.0001, 0.0003, 0.001, 0.003, 0.01]
-for gradientLearningRate in mrange:
+best_epochs = []
+mrange = [0.003, 0.01, 0.03, 0.1, 0.3]
+
+for alpha in mrange:
     min_rmse = 2
 
     # Initialise all our arrays
@@ -38,7 +40,7 @@ for gradientLearningRate in mrange:
         visitingOrder = np.array(trStats["u_users"])
         np.random.shuffle(visitingOrder)
 
-        # adaptiveLearningRate = gradientLearningRate / epoch
+        adaptiveLearningRate = alpha / epoch
         for user in visitingOrder:
             # get the ratings of that user
             ratingsForUser = lib.getRatingsForUser(user, training)
@@ -68,7 +70,7 @@ for gradientLearningRate in mrange:
             negprods[ratingsForUser[:, 0], :, :] += rbm.probProduct(negData, negHiddenProb)
 
             # we average over the number of users
-            grad = momentum*grad + gradientLearningRate * (posprods - negprods) / trStats["n_users"]
+            grad = momentum*grad + adaptiveLearningRate * (posprods - negprods) / trStats["n_users"]
             # grad = gradientLearningRate * (posprods - negprods) / trStats["n_users"]
             W += grad
 
@@ -82,18 +84,20 @@ for gradientLearningRate in mrange:
         vl_r_hat = rbm.predict(vlStats["movies"], vlStats["users"], W, training)
         vlRMSE = lib.rmse(vlStats["ratings"], vl_r_hat)
 
-        print "### Alpha %4f EPOCH %d ###" % (gradientLearningRate,epoch)
+        print "### Alpha %.3f EPOCH %d ###" % (alpha,epoch)
         print "Training loss = %f" % trRMSE
         print "Validation loss = %f" % vlRMSE
 
         if vlRMSE < min_rmse:
             min_rmse = vlRMSE
             best_epoch = epoch
-            best_F = F
     rmse_m.append(min_rmse)
+    best_epochs.append(best_epoch)
+
 
 print(rmse_m)
-print(min_rmse, best_epoch, best_F)
+print(best_epochs)
+print(min_rmse)
 
 plt.plot(mrange, rmse_m, 'ro')
 plt.axis([min(mrange), max(mrange), 1.1, 1.2])

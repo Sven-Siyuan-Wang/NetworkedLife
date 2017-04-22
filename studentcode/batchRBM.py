@@ -14,8 +14,8 @@ K = 5
 # SET PARAMETERS HERE!!!
 # number of hidden units
 F = 8
-epochs = 50
-gradientLearningRate = 0.001
+epochs = 30
+alpha = 0.03
 momentum = 0
 B = 10
 
@@ -23,7 +23,7 @@ B = 10
 # Parameter tuning
 rmse_m = []
 mrange = [0, 0.2, 0.4, 0.6, 0.8, 0.9, 1]
-
+# mrange = [0]
 
 def getBatches(array, B):
     ret = []
@@ -46,11 +46,11 @@ for momentum in mrange:
         # in each epoch, we'll visit all users in a random order
         visitingOrder = np.array(trStats["u_users"])
         np.random.shuffle(visitingOrder)
-        # print(trStats["u_users"])
-        # adaptiveLearningRate = gradientLearningRate / epoch
+        adaptiveLearningRate = alpha / epoch
         batches = getBatches(visitingOrder, B)
         for batch in batches:
-            grad = 0
+            prev_grad = grad
+            grad = np.zeros(W.shape)
             for user in batch:
                 # get the ratings of that user
                 ratingsForUser = lib.getRatingsForUser(user, training)
@@ -80,11 +80,11 @@ for momentum in mrange:
                 negprods[ratingsForUser[:, 0], :, :] += rbm.probProduct(negData, negHiddenProb)
 
                 # we average over the number of users
-                grad += gradientLearningRate * (posprods - negprods) / trStats["n_users"]
+                grad += adaptiveLearningRate * (posprods - negprods) / trStats["n_users"]
                 # grad = gradientLearningRate * (posprods - negprods) / trStats["n_users"]
 
             # mini-batch update of weights
-            W += grad
+            W += grad + momentum * prev_grad
 
         # Print the current RMSE for training and validation sets
         # this allows you to control for overfitting e.g
@@ -96,7 +96,7 @@ for momentum in mrange:
         vl_r_hat = rbm.predict(vlStats["movies"], vlStats["users"], W, training)
         vlRMSE = lib.rmse(vlStats["ratings"], vl_r_hat)
 
-        print "### Momentum %d EPOCH %d ###" % (momentum, epoch)
+        print "### Momentum %.2f EPOCH %d ###" % (momentum, epoch)
         print "Training loss = %f" % trRMSE
         print "Validation loss = %f" % vlRMSE
 
