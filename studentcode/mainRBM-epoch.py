@@ -3,6 +3,8 @@ import rbm
 import projectLib as lib
 import matplotlib.pyplot as plt
 import csv
+import time
+
 training = lib.getTrainingData()
 validation = lib.getValidationData()
 # You could also try with the chapter 4 data
@@ -22,16 +24,14 @@ B = 10
 regularization = 0.0001
 
 # Parameter tuning
-mrange = [0.75]
-rrange = [0.001]
+mrange = [0.6, 0.75, 0.9]
+rrange = [0.0001, 0.001]
 # arange = [0.01, 0.03, 0.1]
 arange = [0.1]
-brange = [10]
+brange = [5, 10]
 frange = [8]
 
-
 total = len(mrange) * len(rrange) * len(arange) * len(brange) * len(frange)
-
 def getBatches(array, B):
     ret = []
     for i in range(int(len(array)/B)):
@@ -42,7 +42,7 @@ def getBatches(array, B):
 
 # output file
 
-csvfile = open("squared.csv",'w')
+csvfile = open("tuningParams.csv",'w')
 
 writer = csv.writer(csvfile, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
 writer.writerow(['Momentum', 'Regularization', 'Alpha', 'B', 'F', 'epoch', 'RMSE'])
@@ -60,10 +60,10 @@ for momentum in mrange:
         for alpha in arange:
             for B in brange:
                 for F in frange:
+                    print("Finished: %.3f" % (1.0 * counter/total))
+                    counter += 1
                     # reset best params
                     min_rmse = 2
-                    print("Finished: %.3f" % (1.0 * counter / total))
-                    counter += 1
 
                     # Initialise all our arrays
                     W = rbm.getInitialWeights(trStats["n_movies"], F, K)
@@ -75,7 +75,7 @@ for momentum in mrange:
                         # in each epoch, we'll visit all users in a random order
                         visitingOrder = np.array(trStats["u_users"])
                         np.random.shuffle(visitingOrder)
-                        adaptiveLearningRate = alpha / epoch**2
+                        adaptiveLearningRate = alpha / epoch
                         batches = getBatches(visitingOrder, B)
                         for batch in batches:
                             prev_grad = grad
@@ -137,8 +137,11 @@ for momentum in mrange:
                             best_B = B
                             best_F = F
                             min_rmse = vlRMSE
-                    print('Best RMSE:', min_rmse)
                     writer.writerow([best_momentum, best_reg, best_alpha, best_B, best_F, best_epoch, min_rmse])
+
+
+
+
 
 
 # (1.1396005045845585, 29, 6)
@@ -147,5 +150,5 @@ for momentum in mrange:
 ### END ###
 # This part you can write on your own
 # you could plot the evolution of the training and validation RMSEs for example
-predictedRatings = np.array([rbm.predictForUser(user, W, training) for user in trStats["u_users"]])
-np.savetxt("predictedRatings.txt", predictedRatings)
+# predictedRatings = np.array([rbm.predictForUser(user, W, training) for user in trStats["u_users"]])
+# np.savetxt("predictedRatings.txt", predictedRatings)
