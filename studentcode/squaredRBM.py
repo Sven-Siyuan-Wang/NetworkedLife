@@ -22,11 +22,12 @@ B = 10
 regularization = 0.0001
 
 # Parameter tuning
-mrange = [0.6, 0.75, 0.9]
-rrange = [0.00001, 0.0001,0.0003, 0.001, 0.01]
-arange = [0.01, 0.03, 0.1]
-brange = [5, 10, 20]
-frange = [6, 8, 10]
+mrange = [0.75]
+rrange = [0.001]
+# arange = [0.01, 0.03, 0.1]
+arange = [0.1]
+brange = [10]
+frange = [8]
 
 
 total = len(mrange) * len(rrange) * len(arange) * len(brange) * len(frange)
@@ -136,11 +137,8 @@ for momentum in mrange:
                             best_B = B
                             best_F = F
                             min_rmse = vlRMSE
+                    print('Best RMSE:', min_rmse)
                     writer.writerow([best_momentum, best_reg, best_alpha, best_B, best_F, best_epoch, min_rmse])
-
-
-
-
 
 
 # (1.1396005045845585, 29, 6)
@@ -149,5 +147,5 @@ for momentum in mrange:
 ### END ###
 # This part you can write on your own
 # you could plot the evolution of the training and validation RMSEs for example
-# predictedRatings = np.array([rbm.predictForUser(user, W, training) for user in trStats["u_users"]])
-# np.savetxt("predictedRatings.txt", predictedRatings)
+predictedRatings = np.array([rbm.predictForUser(user, W, training) for user in trStats["u_users"]])
+np.savetxt("predictedRatings.txt", predictedRatings)
