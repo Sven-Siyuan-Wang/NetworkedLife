@@ -19,14 +19,14 @@ K = 5
 # SET PARAMETERS HERE!!!
 # number of hidden units
 F = 8
-epochs = 14
+epochs = 30
 alpha = 0.03
 momentum = 0
 B = 10
 regularization = 0.0001
 
 # Parameter tuning
-mrange = [0.75]
+mrange = [0.9]
 rrange = [0.001]
 # arange = [0.01, 0.03, 0.1]
 arange = [0.1]
