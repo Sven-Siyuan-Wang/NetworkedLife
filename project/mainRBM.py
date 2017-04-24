@@ -25,14 +25,12 @@ momentum = 0
 B = 10
 regularization = 0.0001
 
-# Parameter tuning
+# Parameter tuning: final params chosen
 mrange = [0.9]
 rrange = [0.001]
-# arange = [0.01, 0.03, 0.1]
 arange = [0.1]
 brange = [10]
 frange = [8]
-
 
 total = len(mrange) * len(rrange) * len(arange) * len(brange) * len(frange)
 
@@ -79,7 +77,10 @@ for momentum in mrange:
                         # in each epoch, we'll visit all users in a random order
                         visitingOrder = np.array(trStats["u_users"])
                         np.random.shuffle(visitingOrder)
+
+                        # EXTENSION: Adaptive Learning Rate
                         adaptiveLearningRate = alpha / epoch**2
+                        # EXTENSION: Mini-batch
                         batches = getBatches(visitingOrder, B)
                         for batch in batches:
                             prev_grad = grad
@@ -113,10 +114,12 @@ for momentum in mrange:
                                 negprods[ratingsForUser[:, 0], :, :] += rbm.probProduct(negData, negHiddenProb)
 
                                 # we average over the number of users
+                                # EXTENSION: Regularization
                                 grad += adaptiveLearningRate * ((posprods - negprods) / trStats["n_users"] - regularization * W)
                                 # grad += adaptiveLearningRate * (posprods - negprods) / trStats["n_users"]
 
                             # mini-batch update of weights
+                            # EXTENSION: Momentum
                             W += grad + momentum * prev_grad
 
                         # Print the current RMSE for training and validation sets
@@ -133,6 +136,7 @@ for momentum in mrange:
                         print "Training loss = %f" % trRMSE
                         print "Validation loss = %f" % vlRMSE
 
+                        # EXTENSION: Early Stopping
                         if vlRMSE < min_rmse:
                             best_momentum = momentum
                             best_reg = regularization
@@ -143,8 +147,6 @@ for momentum in mrange:
                             min_rmse = vlRMSE
                     print('Best RMSE:', min_rmse)
                     writer.writerow([best_momentum, best_reg, best_alpha, best_B, best_F, best_epoch, min_rmse])
-
-
 
 ### END ###
 # This part you can write on your own
